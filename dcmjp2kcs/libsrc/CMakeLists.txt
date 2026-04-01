@@ -17,6 +17,7 @@ DCMTK_ADD_LIBRARY(dcmjp2kcs
 )
 
 DCMTK_TARGET_LINK_MODULES(dcmjp2kcs ofstd oflog dcmdata dcmimgle dcmimage)
+target_compile_definitions(dcmjp2kcs INTERFACE DCMTK_WITH_DCMJP2KCS)
 
 if(DCMTK_WITH_OPENJPEG)
   # Link against OpenJPEG library
