@@ -1,0 +1,96 @@
+/*!
+
+\page mod_dcmjp2kcs dcmjp2kcs: a JPEG 2000 compression/decompression library and utility apps
+
+\note This is a community-supported external module and is not part of the
+official DCMTK distribution.
+
+This module contains classes that convert between uncompressed and JPEG 2000
+compressed representations (transfer syntaxes) of a DICOM image object. Both
+lossless and lossy JPEG 2000 processes are supported. This module implements a
+family of codecs that are derived from class DcmCodec and can be registered in
+the codec list maintained in module dcmdata. The underlying compression and
+decompression is performed by the OpenJPEG library.
+
+The main interface classes are:
+\li \b DJ2KEncoderRegistration
+\li \b DJ2KDecoderRegistration
+\li \b DJ2KEncoderBase
+\li \b DJ2KDecoderBase
+
+\section Tools
+
+This module contains the following command line tools:
+\li \ref dcmcjp2kcs
+\li \ref dcmdjp2kcs
+
+\section Examples
+
+The following example shows how to compress a DICOM image file with lossless JPEG 2000:
+
+\code
+DJ2KEncoderRegistration::registerCodecs(); // register JPEG 2000 codecs
+DcmFileFormat fileformat;
+if (fileformat.loadFile("test.dcm").good())
+{
+  DcmDataset *dataset = fileformat.getDataset();
+  DJ2KRepresentationParameter rp(OFTrue); // lossless
+
+  // this causes the lossless JPEG 2000 version of the dataset to be created
+  dataset->chooseRepresentation(EXS_JPEG2000LosslessOnly, &rp);
+
+  // check if everything went well
+  if (dataset->canWriteXfer(EXS_JPEG2000LosslessOnly))
+  {
+    // store in lossless JPEG 2000 format
+    fileformat.saveFile("test_j2k.dcm", EXS_JPEG2000LosslessOnly);
+  }
+}
+DJ2KEncoderRegistration::cleanup(); // deregister JPEG 2000 codecs
+\endcode
+
+The following example shows how to compress a DICOM image file with lossy JPEG 2000
+at a compression ratio of 20:1:
+
+\code
+DJ2KEncoderRegistration::registerCodecs(); // register JPEG 2000 codecs
+DcmFileFormat fileformat;
+if (fileformat.loadFile("test.dcm").good())
+{
+  DcmDataset *dataset = fileformat.getDataset();
+  DJ2KRepresentationParameter rp(OFFalse, 20.0); // lossy, ratio 20:1
+
+  // this causes the lossy JPEG 2000 version of the dataset to be created
+  dataset->chooseRepresentation(EXS_JPEG2000, &rp);
+
+  // check if everything went well
+  if (dataset->canWriteXfer(EXS_JPEG2000))
+  {
+    fileformat.saveFile("test_j2k_lossy.dcm", EXS_JPEG2000);
+  }
+}
+DJ2KEncoderRegistration::cleanup(); // deregister JPEG 2000 codecs
+\endcode
+
+The following example shows how to decompress a JPEG 2000 compressed DICOM image file:
+
+\code
+DJ2KDecoderRegistration::registerCodecs(); // register JPEG 2000 codecs
+DcmFileFormat fileformat;
+if (fileformat.loadFile("test_j2k.dcm").good())
+{
+  DcmDataset *dataset = fileformat.getDataset();
+
+  // decompress data set if compressed
+  dataset->chooseRepresentation(EXS_LittleEndianExplicit, NULL);
+
+  // check if everything went well
+  if (dataset->canWriteXfer(EXS_LittleEndianExplicit))
+  {
+    fileformat.saveFile("test_decompressed.dcm", EXS_LittleEndianExplicit);
+  }
+}
+DJ2KDecoderRegistration::cleanup(); // deregister JPEG 2000 codecs
+\endcode
+
+*/
