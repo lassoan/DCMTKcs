@@ -131,6 +131,16 @@ public:
     DcmItem *dataset,
     OFString &decompressedColorModel) const;
 
+  /** returns the number of bits allocated for each sample of the decompressed image.
+   *  This codec only supports encoding, so this method always returns 0.
+   *  @param bitsAllocated current value of Bits Allocated (ignored)
+   *  @param bitsStored current value of Bits Stored (ignored)
+   *  @return 0 (encoding-only codec, decompression not supported)
+   */
+  virtual Uint16 decodedBitsAllocated(
+    Uint16 bitsAllocated,
+    Uint16 bitsStored) const;
+
 private:
 
   /** returns the transfer syntax that this particular codec

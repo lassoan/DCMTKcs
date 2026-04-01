@@ -23,7 +23,7 @@
 #define DCMJP2KCS_DJ2KRPARAM_H
 
 #include "dcmtk/config/osconfig.h"
-#include "dcmtk/dcmdata/dccodec.h"  /* for DcmRepresentationParameter */
+#include "dcmtk/dcmdata/dcpixel.h"  /* for DcmRepresentationParameter */
 #include "dcmtk/dcmjp2kcs/dj2kdefine.h"
 
 /** representation parameter for JPEG 2000 encoding

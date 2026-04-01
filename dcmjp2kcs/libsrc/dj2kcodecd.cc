@@ -1026,6 +1026,24 @@ Uint32 DJ2KDecoderBase::computeNumberOfFragments(
 }
 
 
+Uint16 DJ2KDecoderBase::decodedBitsAllocated(
+    Uint16 /* bitsAllocated */,
+    Uint16 bitsStored) const
+{
+  // this codec does not support images with less than 2 bits per sample
+  if (bitsStored < 2) return 0;
+
+  // for images with 2..8 bits per sample, BitsAllocated will be 8
+  if (bitsStored <= 8) return 8;
+
+  // for images with 9..16 bits per sample, BitsAllocated will be 16
+  if (bitsStored <= 16) return 16;
+
+  // this codec does not support images with more than 16 bits per sample
+  return 0;
+}
+
+
 OFBool DJ2KDecoderBase::isJPEG2000StartOfCodestream(Uint8 *fragmentData, Uint32 fragmentLength)
 {
   if (fragmentLength < 2) return OFFalse;

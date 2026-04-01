@@ -189,6 +189,14 @@ OFCondition DJ2KEncoderBase::determineDecompressedColorModel(
   return EC_IllegalCall;
 }
 
+Uint16 DJ2KEncoderBase::decodedBitsAllocated(
+    Uint16 /* bitsAllocated */,
+    Uint16 /* bitsStored */) const
+{
+  // encoding-only codec, decompression not supported
+  return 0;
+}
+
 OFCondition DJ2KEncoderBase::encode(
     const Uint16 *pixelData,
     const Uint32 length,
