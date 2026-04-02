@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.15)
 
+
 project(DCMTKcs)
+
+# Enable testing
+include(CTest)
+enable_testing()
 
 # Option to build OpenJPEG as static library (enabled by default)
 option(DCMTKCS_OPENJPEG_STATIC "Build OpenJPEG as a static library" ON)
@@ -81,3 +86,28 @@ ExternalProject_Add(
     BUILD_ALWAYS 1
     DEPENDS OpenJPEG
 )
+
+
+# Add tests for each *_tests.exe in the DCMTK-build/bin/Release directory
+set(DCMTK_TEST_EXECUTABLES
+    dcmdata_tests.exe
+    dcmect_tests.exe
+    dcmfg_tests.exe
+    dcmiod_tests.exe
+    dcmjp2kcs_tests.exe
+    dcmnet_tests.exe
+    dcmrt_tests.exe
+    dcmseg_tests.exe
+    dcmsr_tests.exe
+    dcmtls_tests.exe
+    dcmtract_tests.exe
+    oficonv_tests.exe
+    ofstd_tests.exe
+)
+
+foreach(test_exec ${DCMTK_TEST_EXECUTABLES})
+    add_test(
+        NAME ${test_exec}
+        COMMAND ${CMAKE_BINARY_DIR}/DCMTK-build/bin/Release/${test_exec}
+    )
+endforeach()
