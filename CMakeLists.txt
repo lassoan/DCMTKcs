@@ -1,5 +1,13 @@
 cmake_minimum_required(VERSION 3.15)
+
 project(DCMTKcs)
+
+# Option to build OpenJPEG as static library (enabled by default)
+option(DCMTKCS_OPENJPEG_STATIC "Build OpenJPEG as a static library" ON)
+set(OPENJPEG_BUILD_SHARED_LIBS OFF)
+if(NOT DCMTKCS_OPENJPEG_STATIC)
+    set(OPENJPEG_BUILD_SHARED_LIBS ON)
+endif()
 
 include(ExternalProject)
 
@@ -25,7 +33,7 @@ ExternalProject_Add(OpenJPEG
     INSTALL_DIR ${OPENJPEG_INSTALL_DIR}
     CMAKE_CACHE_ARGS
         -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-        -DBUILD_SHARED_LIBS:BOOL=ON
+        -DBUILD_SHARED_LIBS:BOOL=${OPENJPEG_BUILD_SHARED_LIBS}
         -DBUILD_TESTING:BOOL=OFF
         -DBUILD_CODEC:BOOL=OFF
         -DCMAKE_INSTALL_LIBDIR:STRING=lib
