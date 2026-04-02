@@ -88,26 +88,30 @@ ExternalProject_Add(
 )
 
 
-# Add tests for each *_tests.exe in the DCMTK-build/bin/Release directory
+# Add tests for each *_tests executable in the DCMTK-build/bin/$<CONFIG> directory
 set(DCMTK_TEST_EXECUTABLES
-    dcmdata_tests.exe
-    dcmect_tests.exe
-    dcmfg_tests.exe
-    dcmiod_tests.exe
-    dcmjp2kcs_tests.exe
-    dcmnet_tests.exe
-    dcmrt_tests.exe
-    dcmseg_tests.exe
-    dcmsr_tests.exe
-    dcmtls_tests.exe
-    dcmtract_tests.exe
-    oficonv_tests.exe
-    ofstd_tests.exe
+    dcmdata_tests
+    dcmect_tests
+    dcmfg_tests
+    dcmiod_tests
+    dcmjp2kcs_tests
+    dcmnet_tests
+    dcmrt_tests
+    dcmseg_tests
+    dcmsr_tests
+    dcmtls_tests
+    dcmtract_tests
+    oficonv_tests
+    ofstd_tests
 )
+
+
+# Detect if this is a multi-config generator (e.g., Visual Studio, Xcode)
+get_property(MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 
 foreach(test_exec ${DCMTK_TEST_EXECUTABLES})
     add_test(
-        NAME ${test_exec}
-        COMMAND ${CMAKE_BINARY_DIR}/DCMTK-build/bin/Release/${test_exec}
+        NAME ${test_exec}${CMAKE_EXECUTABLE_SUFFIX}
+        COMMAND ${CMAKE_BINARY_DIR}/DCMTK-build/bin/$<IF:$<BOOL:${MULTI_CONFIG}>,$<CONFIG>/,>${test_exec}${CMAKE_EXECUTABLE_SUFFIX}
     )
 endforeach()
