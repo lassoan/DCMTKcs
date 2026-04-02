@@ -520,10 +520,16 @@ OFCondition DJ2KEncoderBase::encodeFrame(
     return EC_MemoryExhausted;
   }
 
-  // Suppress all messages
+  // Suppress all messages by default, enable handlers if DCMTK_ENABLE_OPENJPEG_LOGGING is defined
+#ifdef DCMTK_ENABLE_OPENJPEG_LOGGING
+  opj_set_info_handler(codec, [](const char* msg, void*) { DCMJP2KCS_INFO("OpenJPEG: %s", msg); }, NULL);
+  opj_set_warning_handler(codec, [](const char* msg, void*) { DCMJP2KCS_WARN("OpenJPEG: %s", msg); }, NULL);
+  opj_set_error_handler(codec, [](const char* msg, void*) { DCMJP2KCS_ERROR("OpenJPEG: %s", msg); }, NULL);
+#else
   opj_set_info_handler(codec, NULL, NULL);
   opj_set_warning_handler(codec, NULL, NULL);
   opj_set_error_handler(codec, NULL, NULL);
+#endif
 
   if (!opj_setup_encoder(codec, &params, image))
   {

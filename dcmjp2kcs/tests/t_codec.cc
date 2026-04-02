@@ -223,32 +223,25 @@ static void doRoundTrip(DcmDataset &dataset, E_TransferSyntax compressedXfer,
 
     // --- Encode ---
     DJ2KEncoderRegistration::registerCodecs();
-    OFCondition result = dataset.chooseRepresentation(compressedXfer,
-                                                      &rp);
-    OFCHECK(result.good());
-    if (result.good())
-    {
-        OFCHECK(dataset.canWriteXfer(compressedXfer));
-    }
-    DJ2KEncoderRegistration::cleanup();
-
-    if (result.bad())
-    {
+    OFCondition result = dataset.chooseRepresentation(compressedXfer, &rp);
+    if (!result.good()) {
+        std::cerr << "[ERROR] Encoding failed: " << result.text() << std::endl;
         delete[] savedPixels;
         return;
     }
+    OFCHECK(dataset.canWriteXfer(compressedXfer));
+    DJ2KEncoderRegistration::cleanup();
 
     // --- Decode ---
     DJ2KDecoderRegistration::registerCodecs();
     result = dataset.chooseRepresentation(EXS_LittleEndianExplicit, NULL);
-    OFCHECK(result.good());
-    DJ2KDecoderRegistration::cleanup();
-
-    if (result.bad())
-    {
+    if (!result.good()) {
+        std::cerr << "[ERROR] Decoding failed: " << result.text() << std::endl;
+        DJ2KDecoderRegistration::cleanup();
         delete[] savedPixels;
         return;
     }
+    DJ2KDecoderRegistration::cleanup();
 
     // Verify pixel data
     if (checkPixelExact)
@@ -289,7 +282,7 @@ OFTEST(dcmjp2kcs_roundtrip_lossless_grayscale8)
     OFCHECK_FAIL("test skipped: OpenJPEG support not compiled in");
 #else
     DcmDataset dataset;
-    if (!buildGrayscaleDataset(dataset, 16, 16, 8))
+    if (!buildGrayscaleDataset(dataset, 128, 128, 8))
         return;
 
     DJ2KRepresentationParameter rp(OFTrue); // lossless
@@ -308,7 +301,7 @@ OFTEST(dcmjp2kcs_roundtrip_lossless_grayscale16)
     OFCHECK_FAIL("test skipped: OpenJPEG support not compiled in");
 #else
     DcmDataset dataset;
-    if (!buildGrayscaleDataset(dataset, 16, 16, 16))
+    if (!buildGrayscaleDataset(dataset, 128, 128, 16))
         return;
 
     DJ2KRepresentationParameter rp(OFTrue); // lossless
@@ -327,7 +320,7 @@ OFTEST(dcmjp2kcs_roundtrip_lossy_grayscale8)
     OFCHECK_FAIL("test skipped: OpenJPEG support not compiled in");
 #else
     DcmDataset dataset;
-    if (!buildGrayscaleDataset(dataset, 16, 16, 8))
+    if (!buildGrayscaleDataset(dataset, 128, 128, 8))
         return;
 
     DJ2KRepresentationParameter rp(OFFalse, 5.0); // lossy, ratio 5:1
