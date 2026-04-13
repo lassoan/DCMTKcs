@@ -10,15 +10,15 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build and Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake g++ git libpng-dev libtiff-dev zlib1g-dev
 
       - name: Configure CMake
         run: |
@@ -26,9 +26,8 @@ jobs:
 
       - name: Build
         run: |
-          cmake --build build -- -j$(nproc)
+          cmake --build build --config Release
 
       - name: Run tests
         run: |
-          cd build
-          ctest --output-on-failure
+          ctest --test-dir build --build-config Release --output-on-failure
