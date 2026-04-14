@@ -28,6 +28,14 @@ jobs:
         run: |
           cmake --build build --config Release
 
+      - name: Set short hostname (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          # DCMTK enforces a 62-character limit on DICOM hostnames.
+          # GitHub Actions macOS runner hostnames are much longer, which
+          # causes dcmtls_tests to fail. Override with a short name.
+          sudo scutil --set HostName ci-runner
+
       - name: Run tests
         run: |
           ctest --test-dir build --build-config Release --output-on-failure
